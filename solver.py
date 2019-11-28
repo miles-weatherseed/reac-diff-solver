@@ -26,8 +26,8 @@ class Solver:
     def set_reactionFunction(self, function):
         self.reactionFunction = function
 
-    def set_initialConditions(self, ic_function):
-        self.initialCondtions = ic_function
+    def set_initialConditions(self, initial_conditions):
+        self.initialCondtions = initial_conditions
 
     def set_timeBounds(self, bounds):
         self.timeBounds = bounds
@@ -62,7 +62,7 @@ class Solver:
         self.yStepLength = (self.yBounds[1] - self.yBounds[0]) / self.yStepNumber
 
 
-    def make_arrays(self):
+    def create_arrays(self):
         """Make spatial mesh including final point"""
 
         self.tTrace = np.linspace(self.timeBounds[0], self.timeBounds[1], self.timeStepNumber)
@@ -72,11 +72,8 @@ class Solver:
         self.uSolution = np.zeros(self.timeStepNumber + 1, self.yStepNumber + 1, self.xStepNumber + 1)
         self.vSolution = np.zeros(self.timeStepNumber +1 , self.yStepNumber + 1, self.xStepNumber + 1)
 
-    def set_initialconditions(self):
-        self.uSolution[0,:,:] = self.initialConditions[0]
-        self.vSolution[0,:,:] = self.initialConditions[1]
 
-    def make_1dFdMatrix(self, N):
+    def create_fdmatrix(self, N):
         """ Make FD Matrix for Periodic BCs"""
         nx = self.xStepNumber
         e = np.ones(nx + 1)
@@ -100,8 +97,14 @@ class Solver:
 
 
     def solve(self):
+
+        self.create_arrays()
+        self.create_fdmatrix()
+
+        self.uSolution[0, :, :] = self.initialConditions[0]
+        self.vSolution[0, :, :] = self.initialConditions[1]
+
         uvec = self.uSolution[0,:,:].reshape(-1)
-        vvec = self.vSolution[0,:,:].reshape(-1)
         I = np.eye(len(uvec))
         matrix = I - self.timeStepLength * self.matrix
         x0 = np.zeros(len(uvec))
