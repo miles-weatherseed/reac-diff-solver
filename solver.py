@@ -70,8 +70,8 @@ class Solver:
         self.diff_u = parameters[0]
         self.diff_v = parameters[1]
 
-        self.create_arrays(times)
-        self.create_fdmatrix()
+        self._create_arrays(times)
+        self._create_fdmatrix()
 
         self.uSolution[0, :, :] = self.initialConditions_u
         self.vSolution[0, :, :] = self.initialConditions_v
