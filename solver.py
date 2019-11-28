@@ -7,115 +7,88 @@ import matplotlib.pyplot as plt
 class Solver:
 
         # Constructor
-    def __init__(self):
+    def __init__(self, xBounds, yBounds, gridSize, initial_condition_function):
+        self.initial_condition_function = initial_condition_function
+        self.set_grid(xBounds,yBounds,gridSize)
+        self.initialConditions_u = self.initial_condition_function(self.X, self.Y)[0]
+        self.initialConditions_v = self.initial_condition_function(self.X, self.Y)[1]
+
         self.timeBounds = [0.0, 1.0]
-        self.xBounds = [0.0, 1.0]
-        self.yBounds = [0.0, 1.0]
-        self.reactionFunction = None
-        self.timeStepLength = 0.001
-        self.timeStepNumber = None
-        self.xStepLength = 0.01
-        self.yStepLength = 0.01
-        self.xStepNumber = None
-        self.yStepNumber = None
-        self.solutionTrace = []
-        self.tTrace = []
+        self.reactionFunction = lambda u, v: [0,0]
+        self.timeStepLength = 0.00001
         self.funcdim = 2
         self.funcparams = (1,)
-        self.initialConditions = None
+
+    def set_grid(self, xBounds, yBounds, gridSize):
+        self.xBounds = xBounds
+        self.yBounds = yBounds
+        self.gridSize = gridSize
+        self.xStepLength = (xBounds[1] - xBounds[0])/(gridSize + 1)
+        self.yStepLength = (yBounds[1] - yBounds[0])/(gridSize + 1)
+        self.x = np.linspace(self.xBounds[0], self.xBounds[1], gridSize)
+        self.y = np.linspace(self.yBounds[0], self.yBounds[1], gridSize)
+        self.X, self.Y = np.meshgrid(self.x, self.y) # create mesh
+        self.initialConditions = self.initial_condition_function(self.X, self.Y) # calculate initial conditions on new mesh
 
     def set_reactionFunction(self, function):
         self.reactionFunction = function
 
-    def set_initialConditions(self, initial_conditions):
-        self.initialConditions = initial_conditions
-
-    def set_timeBounds(self, bounds):
-        self.timeBounds = bounds
-
-    def set_xBounds(self, bounds):
-        self.xBounds = bounds
-
-    def set_yBounds(self, bounds):
-        self.yBounds = bounds
+    def set_initialConditions(self, initial_condition_function):
+        self.initial_condition_function = initial_condition_function
+        self.initialConditions_u = self.initial_condition_function(self.X, self.Y)[0]
+        self.initialConditions_v = self.initial_condition_function(self.X, self.Y)[1]
 
     def set_timeStepLength(self, length):
         self.timeStepLength = length
 
-    def set_xStepLength(self, length):
-        self.xStepLength = length
-
-    def set_yStepLength(self, length):
-        self.yStepLength = length
-
-    def get_step_numbers(self):
-        """
-        Determine number of steps for finite differences and updates corresponding step sizes
-        """
-
-        self.timeStepNumber = int(np.ceil((self.timeBounds[1] - self.timeBounds[0]) / self.timeStepLength))
-        self.timeStepLength = (self.timeBounds[1] - self.timeBounds[0]) / self.timeStepNumber
-
-        self.xStepNumber = int(np.ceil((self.xBounds[1] - self.xBounds[0]) / self.xStepLength))
-        self.xStepLength = (self.xBounds[1] - self.xBounds[0]) / self.xStepNumber
-
-        self.yStepNumber = int(np.ceil((self.yBounds[1] - self.yBounds[0]) / self.yStepLength))
-        self.yStepLength = (self.yBounds[1] - self.yBounds[0]) / self.yStepNumber
-
-
-    def create_arrays(self):
+    def _create_arrays(self, times):
         """Make spatial mesh including final point"""
 
-
-        self.tTrace = np.linspace(self.timeBounds[0], self.timeBounds[1], self.timeStepNumber)
-        self.xTrace = np.linspace(self.xBounds[0], self.xBounds[1], self.xStepNumber)
-        self.yTrace = np.linspace(self.yBounds[0], self.yBounds[1], self.yStepNumber)
-
-        self.uSolution = np.zeros((self.timeStepNumber, self.yStepNumber, self.xStepNumber))
-        self.vSolution = np.zeros((self.timeStepNumber, self.yStepNumber, self.xStepNumber))
+        self.uSolution = np.zeros((len(times), self.gridSize, self.gridSize))
+        self.vSolution = np.zeros((len(times), self.gridSize, self.gridSize))
 
 
-    def create_fdmatrix(self):
+    def _create_fdmatrix(self):
         """ Make FD Matrix for Periodic BCs"""
-        nx = self.xStepNumber
-        e = np.ones(nx)
+        n = self.gridSize
+        e = np.ones(n)
         diagonals = [e, -2 * e, e]
         offsets = [-1, 0, 1]
-        Lx = (self.xStepLength)**-2 * scipy.sparse.spdiags(diagonals, offsets, nx, nx,
+        L = scipy.sparse.spdiags(diagonals, offsets, n, n,
                                  format='csr').tolil()
         # make periodic
-        Lx[0, -1] = (self.xStepLength)**-2
-        Lx[-1, 0] = (self.xStepLength)**-2
+        L[0, -1] = 1
+        L[-1, 0] = 1
 
-        ny = self.yStepNumber
-        Ly = (self.yStepLength)**-2 * scipy.sparse.spdiags(diagonals, offsets, ny, ny,
-                                 format='csr').tolil()
-        # make periodic
-        Ly[0, -1] = (self.yStepLength)**-2
-        Ly[-1, 0] = (self.yStepLength)**-2
+        I = scipy.sparse.eye(n)
 
-        self.matrix = scipy.sparse.kron(scipy.sparse.eye(ny), Lx) + scipy.sparse.kron(Ly, scipy.sparse.eye(nx))
+        self.laplacian = scipy.sparse.kron(I, (self.xStepLength)**-2 * L) + scipy.sparse.kron((self.yStepLength)**-2 * L, I)
 
 
-    def solve(self):
-        self.get_step_numbers()
-        self.create_arrays()
+    def solve(self, times, parameters):
+        # first two parameters are diffusion coefficients
+        self.diff_u = parameters[0]
+        self.diff_v = parameters[1]
+
+        self.create_arrays(times)
         self.create_fdmatrix()
 
-        self.uSolution[0, :, :] = self.initialConditions[0]
-        self.vSolution[0, :, :] = self.initialConditions[1]
+        self.uSolution[0, :, :] = self.initialConditions_u
+        self.vSolution[0, :, :] = self.initialConditions_v
 
         uvec = self.uSolution[0,:,:].reshape(-1)
-        I = scipy.sparse.eye(len(uvec))
-        matrix = I - self.timeStepLength * self.matrix
-        x0 = np.zeros(len(uvec))
+        vvec = self.vSolution[0,:,:].reshape(-1)
 
-        for i in range(1, self.timeStepNumber):
-            uvec = self.uSolution[i-1,:,:].reshape(-1)
-            vvec = self.vSolution[i-1,:,:].reshape(-1)
-            uvec1 = conjugate_gradients(matrix, uvec + self.timeStepLength * self.reactionFunction[0](uvec, vvec), x0)[0]
-            vvec1 = conjugate_gradients(matrix, vvec + self.timeStepLength * self.reactionFunction[1](uvec, vvec), x0)[0]
+        I = scipy.sparse.eye(self.gridSize**2)
+        matrix_u = I - self.timeStepLength * self.diff_u * self.laplacian
+        matrix_v = I - self.timeStepLength * self.diff_v * self.laplacian
+        x0 = np.zeros(self.gridSize**2)
 
-            self.uSolution[i ,: , :] = uvec1.reshape(self.xStepNumber, self.yStepNumber)
-            self.vSolution[i ,: , :] = vvec1.reshape(self.xStepNumber, self.yStepNumber)
-
+        t = times[0]
+        for i in range(1,len(times)):
+            while t < times[i]:
+                uvec = conjugate_gradients(matrix_u, uvec + self.timeStepLength * self.reactionFunction(uvec, vvec)[0], x0)[0]
+                vvec = conjugate_gradients(matrix_u, vvec + self.timeStepLength * self.reactionFunction(uvec, vvec)[1], x0)[0]
+                t += self.timeStepLength
+            self.uSolution[i,:,:] = uvec.reshape(self.gridSize, self.gridSize)
+            self.vSolution[i,:,:] = vvec.reshape(self.gridSize, self.gridSize)
