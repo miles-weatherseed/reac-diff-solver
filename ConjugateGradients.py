@@ -51,5 +51,4 @@ def conjugate_gradients(A, b, x0, tol = 0.0001, nmax = 100):
         if n > nmax:
             raise Exception('The iteration has failed to converge within nmax(=' + str(nmax) + ') iterations.')
 
-
     return x, res
