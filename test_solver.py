@@ -6,31 +6,18 @@ from mpl_toolkits.mplot3d import Axes3D
 def returns_zero(u,v):
     return 0
 
-solver = Solver()
-solver.set_timeStepLength(0.0001)
-solver.get_step_numbers()
-solver.create_arrays()
+def initial_conditions(X,Y):
+    return [np.sin(4*np.pi*X) * np.sin(2*np.pi*Y), np.sin(4*np.pi*X) * np.sin(2*np.pi*Y)]
 
-x = solver.xTrace
-y = solver.yTrace
-X,Y = np.meshgrid(x,y)
+solver = Solver([0.0,1.0], [0.0,1.0], 50, initial_conditions)
+solver.solve([0.1,0.2,0.4],[.5,1.0])
 
-initial_conditions = np.sin(4*np.pi*X) * np.sin(2*np.pi*Y)
-
-solver.set_initialConditions([initial_conditions,initial_conditions])
-solver.set_reactionFunction([returns_zero,returns_zero])
-solver.solve()
-
-t = solver.tTrace
-T,Y,X = np.meshgrid(t,y,x, indexing = 'ij')
-solution = np.sin(4*np.pi*X) * np.sin(2*np.pi*Y) * np.exp(-40*np.pi**2 * T)
-
-
-X,Y = np.meshgrid(x,y)
-
+t = np.array([0.0,0.1,0.2,0.4])
+T,Y,X = np.meshgrid(t,solver.y,solver.x, indexing = 'ij')
+solution = np.sin(4*np.pi*X) * np.sin(2*np.pi*Y) * np.exp(-20*np.pi**2 * T)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-ax.plot_surface(X,Y,solver.uSolution[250])
-ax.plot_surface(X,Y,solution[250])
+ax.plot_surface(solver.X,solver.Y,solver.uSolution[1])
+ax.plot_surface(solver.X,solver.Y,solution[1])
 plt.show()
