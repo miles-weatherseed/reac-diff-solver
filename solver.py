@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.sparse
+from ConjugateGradients import conjugate_gradients
 
 class Solver:
 
@@ -103,12 +104,13 @@ class Solver:
         vvec = self.vSolution[0,:,:].reshape(-1)
         I = np.eye(len(uvec))
         matrix = I - self.timeStepLength * self.matrix
+        x0 = np.zeros(len(uvec))
 
         for i in range(0, self.timeStepNumber):
             uvec = self.uSolution[i,:,:].reshape(-1)
             vvec = self.vSolution[i,:,:].reshape(-1)
-            uvec1 = np.linalg.solve(matrix, uvec + self.timeStepLength * self.reactionFunction[0](uvec, vvec))
-            vvec1 = np.linalg.solve(matrix, vvec + self.timeStepLength * self.reactionFunction[0](uvec, vvec))
+            uvec1 = conjugate_gradients(matrix, uvec + self.timeStepLength * self.reactionFunction[0](uvec, vvec), x0)
+            vvec1 = conjugate_gradients(matrix, vvec + self.timeStepLength * self.reactionFunction[0](uvec, vvec), x0)
 
             self.uSolution[i+1,:,:] = uvec1.reshape(self.xStepNumber + 1, self.yStepNumber + 1)
             self.vSolution[i + 1, :, :] = vvec1.reshape(self.xStepNumber + 1, self.yStepNumber + 1)
