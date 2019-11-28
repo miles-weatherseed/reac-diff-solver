@@ -17,8 +17,7 @@ class Solver:
         self.xStepNumber = None
         self.yStepNumber = None
         self.solutionTrace = []
-        self.timeTrace = []
-        self.dim = len(self.spatialLowerBounds)
+        self.tTrace = []
         self.funcdim = 2
         self.funcparams = (1,)
         self.initialConditions = None
@@ -27,7 +26,7 @@ class Solver:
         self.reactionFunction = function
 
     def set_initialConditions(self, initial_conditions):
-        self.initialCondtions = initial_conditions
+        self.initialConditions = initial_conditions
 
     def set_timeBounds(self, bounds):
         self.timeBounds = bounds
@@ -69,35 +68,35 @@ class Solver:
         self.xTrace = np.linspace(self.xBounds[0], self.xBounds[1], self.xStepNumber)
         self.yTrace = np.linspace(self.yBounds[0], self.yBounds[1], self.yStepNumber)
 
-        self.uSolution = np.zeros(self.timeStepNumber + 1, self.yStepNumber + 1, self.xStepNumber + 1)
-        self.vSolution = np.zeros(self.timeStepNumber +1 , self.yStepNumber + 1, self.xStepNumber + 1)
+        self.uSolution = np.zeros((self.timeStepNumber + 1, self.yStepNumber + 1, self.xStepNumber + 1))
+        self.vSolution = np.zeros((self.timeStepNumber +1 , self.yStepNumber + 1, self.xStepNumber + 1))
 
 
-    def create_fdmatrix(self, N):
+    def create_fdmatrix(self):
         """ Make FD Matrix for Periodic BCs"""
         nx = self.xStepNumber
         e = np.ones(nx + 1)
         diagonals = [e, -2 * e, e]
         offsets = [-1, 0, 1]
-        Lx = (self.xStepLength)**2 * scipy.sparse.spdiags(diagonals, offsets, nx+1, nx+1,
+        Lx = (self.xStepLength)**2 * scipy.sparse.spdiags(diagonals, offsets, nx, nx,
                                  format='csr').tolil()
         # make periodic
-        Lx[0, -1] = 1
-        Lx[-1, 0] = 1
+        Lx[0, -1] = (self.xStepLength)**2
+        Lx[-1, 0] = (self.xStepLength)**2
 
         ny = self.yStepNumber
-        Ly = (self.yStepLength)**2 * scipy.sparse.spdiags(diagonals, offsets, ny + 1, ny + 1,
+        Ly = (self.yStepLength)**2 * scipy.sparse.spdiags(diagonals, offsets, ny, ny,
                                  format='csr').tolil()
         # make periodic
-        Ly[0, -1] = 1
-        Ly[-1, 0] = 1
+        Ly[0, -1] = (self.yStepLength)**2
+        Ly[-1, 0] = (self.yStepLength)**2
 
-        self.matrix = scipy.sparse.kron(np.eye(ny+1), Lx) + scipy.sparse.kron(Ly, np.eye(nx+1))
+        self.matrix = scipy.sparse.kron(scipy.sparse.eye(ny), Lx) + scipy.sparse.kron(Ly, scipy.sparse.eye(nx))
 
 
 
     def solve(self):
-
+        self.get_step_numbers()
         self.create_arrays()
         self.create_fdmatrix()
 
@@ -105,18 +104,25 @@ class Solver:
         self.vSolution[0, :, :] = self.initialConditions[1]
 
         uvec = self.uSolution[0,:,:].reshape(-1)
-        I = np.eye(len(uvec))
+        I = scipy.sparse.eye(len(uvec))
         matrix = I - self.timeStepLength * self.matrix
         x0 = np.zeros(len(uvec))
 
         for i in range(0, self.timeStepNumber):
             uvec = self.uSolution[i,:,:].reshape(-1)
             vvec = self.vSolution[i,:,:].reshape(-1)
-            uvec1 = conjugate_gradients(matrix, uvec + self.timeStepLength * self.reactionFunction[0](uvec, vvec), x0)
-            vvec1 = conjugate_gradients(matrix, vvec + self.timeStepLength * self.reactionFunction[0](uvec, vvec), x0)
+            uvec1 = conjugate_gradients(matrix, uvec + self.timeStepLength * self.reactionFunction[0](uvec, vvec), x0)[0]
+            vvec1 = conjugate_gradients(matrix, vvec + self.timeStepLength * self.reactionFunction[1](uvec, vvec), x0)[0]
 
-            self.uSolution[i+1,:,:] = uvec1.reshape(self.xStepNumber + 1, self.yStepNumber + 1)
-            self.vSolution[i + 1, :, :] = vvec1.reshape(self.xStepNumber + 1, self.yStepNumber + 1)
+            self.uSolution[i+1,:,:] = uvec1.reshape(self.xStepNumber, self.yStepNumber)
+            self.vSolution[i + 1, :, :] = vvec1.reshape(self.xStepNumber, self.yStepNumber)
 
+s = Solver()
+s.set_timeStepLength(0.2)
+s.set_xStepLength(0.2)
+s.set_yStepLength(0.2)
+
+s.create_fdmatrix()
+print(s.matrix.todense())
 
 
