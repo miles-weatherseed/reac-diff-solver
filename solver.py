@@ -13,8 +13,6 @@ class Solver:
 
         self.reactionFunction = lambda u, v: [0,0]
         self.timeStepLength = 0.0001
-        self.funcdim = 2
-        self.funcparams = (1,)
 
     def set_grid(self, xBounds, yBounds, gridSize):
         self.xBounds = xBounds
