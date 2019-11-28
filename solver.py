@@ -3,9 +3,7 @@ import scipy.sparse
 from ConjugateGradients import conjugate_gradients
 import matplotlib.pyplot as plt
 
-
 class Solver:
-
         # Constructor
     def __init__(self, xBounds, yBounds, gridSize, initial_condition_function):
         self.initial_condition_function = initial_condition_function
@@ -13,9 +11,8 @@ class Solver:
         self.initialConditions_u = self.initial_condition_function(self.X, self.Y)[0]
         self.initialConditions_v = self.initial_condition_function(self.X, self.Y)[1]
 
-        self.timeBounds = [0.0, 1.0]
         self.reactionFunction = lambda u, v: [0,0]
-        self.timeStepLength = 0.00001
+        self.timeStepLength = 0.0001
         self.funcdim = 2
         self.funcparams = (1,)
 
@@ -25,8 +22,8 @@ class Solver:
         self.gridSize = gridSize
         self.xStepLength = (xBounds[1] - xBounds[0])/(gridSize + 1)
         self.yStepLength = (yBounds[1] - yBounds[0])/(gridSize + 1)
-        self.x = np.linspace(self.xBounds[0], self.xBounds[1], gridSize)
-        self.y = np.linspace(self.yBounds[0], self.yBounds[1], gridSize)
+        self.x = np.linspace(self.xBounds[0], self.xBounds[1], gridSize+1)[:-1]
+        self.y = np.linspace(self.yBounds[0], self.yBounds[1], gridSize+1)[:-1]
         self.X, self.Y = np.meshgrid(self.x, self.y) # create mesh
         self.initialConditions = self.initial_condition_function(self.X, self.Y) # calculate initial conditions on new mesh
 
@@ -42,7 +39,7 @@ class Solver:
         self.timeStepLength = length
 
     def _create_arrays(self, times):
-        """Make spatial mesh including final point"""
+        """Create arrays to store solution at given times"""
 
         self.uSolution = np.zeros((len(times), self.gridSize, self.gridSize))
         self.vSolution = np.zeros((len(times), self.gridSize, self.gridSize))
@@ -54,15 +51,15 @@ class Solver:
         e = np.ones(n)
         diagonals = [e, -2 * e, e]
         offsets = [-1, 0, 1]
-        L = scipy.sparse.spdiags(diagonals, offsets, n, n,
-                                 format='csr').tolil()
-        # make periodic
+        L = scipy.sparse.spdiags(diagonals, offsets, n, n, format='csr').tolil()
+
+        # periodic boundary conditions
         L[0, -1] = 1
         L[-1, 0] = 1
 
         I = scipy.sparse.eye(n)
 
-        self.laplacian = scipy.sparse.kron(I, (self.xStepLength)**-2 * L) + scipy.sparse.kron((self.yStepLength)**-2 * L, I)
+        self.laplacian = scipy.sparse.kron(I, self.xStepLength**-2 * L) + scipy.sparse.kron(self.yStepLength**-2 * L, I)
 
 
     def solve(self, times, parameters):
@@ -73,22 +70,24 @@ class Solver:
         self._create_arrays(times)
         self._create_fdmatrix()
 
-        self.uSolution[0, :, :] = self.initialConditions_u
-        self.vSolution[0, :, :] = self.initialConditions_v
+        self.uSolution[0] = self.initialConditions_u
+        self.vSolution[0] = self.initialConditions_v
 
-        uvec = self.uSolution[0,:,:].reshape(-1)
-        vvec = self.vSolution[0,:,:].reshape(-1)
+        uvec = self.uSolution[0].reshape(-1)
+        vvec = self.vSolution[0].reshape(-1)
 
         I = scipy.sparse.eye(self.gridSize**2)
         matrix_u = I - self.timeStepLength * self.diff_u * self.laplacian
         matrix_v = I - self.timeStepLength * self.diff_v * self.laplacian
-        x0 = np.zeros(self.gridSize**2)
 
         t = times[0]
         for i in range(1,len(times)):
             while t < times[i]:
-                uvec = conjugate_gradients(matrix_u, uvec + self.timeStepLength * self.reactionFunction(uvec, vvec)[0], x0)[0]
-                vvec = conjugate_gradients(matrix_u, vvec + self.timeStepLength * self.reactionFunction(uvec, vvec)[1], x0)[0]
+                uvec = conjugate_gradients(matrix_u, uvec + self.timeStepLength * self.reactionFunction(uvec, vvec)[0], uvec)[0]
+                vvec = conjugate_gradients(matrix_v, vvec + self.timeStepLength * self.reactionFunction(uvec, vvec)[1], vvec)[0]
                 t += self.timeStepLength
-            self.uSolution[i,:,:] = uvec.reshape(self.gridSize, self.gridSize)
-            self.vSolution[i,:,:] = vvec.reshape(self.gridSize, self.gridSize)
+
+            self.uSolution[i] = uvec.reshape(self.gridSize, self.gridSize)
+            self.vSolution[i] = vvec.reshape(self.gridSize, self.gridSize)
+
+        return [self.uSolution, self.vSolution]
