@@ -107,5 +107,78 @@ class SolverTest(unittest.TestCase):
                     self.assertAlmostEqual(u[i,j,k], np.sin(4*np.pi*s.X[j,k]) * np.sin(2*np.pi*s.Y[j,k]) * np.exp(-testparams[0]*20*np.pi**2 * testtimes[i]), places = 2)
                     self.assertAlmostEqual(v[i,j,k], np.sin(4*np.pi*s.X[j,k]) * np.sin(2*np.pi*s.Y[j,k]) * np.exp(-testparams[1]*20*np.pi**2 * testtimes[i]), places = 2)
 
+
+    def test_solve_exponential(self):
+        t = np.linspace(0, 5.0, 6)
+        testparams = np.array([1.0, 2.0])
+        k1, k2 = testparams
+
+        def reaction_function(u, v, K):
+            return [-K[0] * u, - K[1] * v]
+
+        def exact(x, y, t):
+            return [1.0 * np.exp(-k1 * t), 2.0 * np.exp(-k2 * t)]
+
+        def initial_conditions(x, y):
+            return exact(x, y, 0)
+
+        solver = Solver([0.0, 1.0], [0.0, 1.0], 30, initial_conditions)
+        solver.set_timeStepLength(0.0001)
+        solver.set_reactionFunction(reaction_function)
+        u, v = solver.solve(t, [5.0, 1.0, k1, k2])
+        T, Y, X = np.meshgrid(t, solver.y, solver.x, indexing='ij')
+        solution = exact(X, Y, T)
+
+        error_u = np.max(np.abs((u - solution[0])))
+        error_v = np.max(np.abs((v - solution[1])))
+        print(error_u)
+        print(error_v)
+
+        # Check Uniform
+        for i in range(len(t)):
+            self.assertAlmostEqual(np.std(u[i]), 0)
+            self.assertAlmostEqual(np.std(v[i]), 0)
+
+
+
+        self.assertLess(error_u, 1e-4)
+        self.assertLess(error_v, 1e-4)
+
+    def test_solve_1ddiffusion(self):
+        mode = 1.0
+        D1 = 0.05
+        D2 = 0.0
+        t = np.linspace(0, 1.0, 11)
+
+        def exact(x, y, t):
+            return [np.sin(4 * np.pi * mode * x) * np.exp(-D1 * t * (4 * np.pi * mode) ** 2), 1]
+
+        def initial_conditions(x, y):
+            return exact(x, y, 0)
+
+        solver = Solver([0.0, 1.0], [0.0, 1.0], 200, initial_conditions)
+        solver.set_timeStepLength(0.0001)
+
+        u, v = solver.solve(t, [D1, D2, 0])
+
+        T, Y, X = np.meshgrid(t, solver.y, solver.x, indexing='ij')
+        solution = exact(X, Y, T)
+
+
+        error_u = np.max(np.abs((u - solution[0])))
+        error_v = np.max(np.abs((v - solution[1])))
+
+        # Check Uniform
+        for i in range(len(t)):
+            for j in range(len(solver.x)):
+                self.assertAlmostEqual(np.std(u[i,:,j]), 0)
+
+        self.assertAlmostEqual(np.std(v), 0)
+        self.assertAlmostEqual(v[1,1,1], 1)
+
+        self.assertLess(error_u, 3*1e-4)
+        self.assertLess(error_v, 1e-4)
+
+
 if __name__ == "__main__":
     unittest.main()
