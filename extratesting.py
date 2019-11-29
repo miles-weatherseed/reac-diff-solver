@@ -77,7 +77,7 @@ def test_1d_reaction():
 
     plt.show()
 
-def test_reactiondiffusion():
+def test_reactiondiffusion(self):
     mode = 1.0
     D1 = 0.05
     D2 = 0.0
@@ -103,6 +103,11 @@ def test_reactiondiffusion():
 
     T, Y, X = np.meshgrid(t, solver.y, solver.x, indexing='ij')
     solution = exact(X, Y, T)
+
+    error_u = np.max(u-solution[0])
+    error_v = np.max(v-solution[1])
+
+    self.assertL
 
     # print(solution.shape())
 
