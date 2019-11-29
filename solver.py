@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.sparse
-import scipy.sparse.linalg
 from ConjugateGradients import conjugate_gradients
 import matplotlib.pyplot as plt
 
@@ -13,7 +12,7 @@ class Solver:
         self.initialConditions_v = self.initial_condition_function(self.X, self.Y)[1]
 
         self.reactionFunction = lambda u, v, parameters: [0,0]
-        self.timeStepLength = 0.0001
+        self.timeStepLength = 10
 
     def set_grid(self, xBounds, yBounds, gridSize):
         self.xBounds = xBounds
@@ -82,14 +81,12 @@ class Solver:
         t = times[0]
         for i in range(1,len(times)):
             j = 1
+            print(times[i])
             while t < times[i]:
                 uvec = conjugate_gradients(matrix_u, uvec + self.timeStepLength * self.reactionFunction(uvec, vvec, parameters[2:])[0], uvec)[0]
                 vvec = conjugate_gradients(matrix_v, vvec + self.timeStepLength * self.reactionFunction(uvec, vvec, parameters[2:])[1], vvec)[0]
-                #t += self.timeStepLength
                 t = times[i-1] + j*self.timeStepLength
                 j += 1
-
-            #print(t)
 
             self.uSolution[i] = uvec.reshape(self.gridSize, self.gridSize)
             self.vSolution[i] = vvec.reshape(self.gridSize, self.gridSize)

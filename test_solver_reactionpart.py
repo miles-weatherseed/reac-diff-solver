@@ -1,27 +1,31 @@
 from solver import Solver
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def initial_conditions(X,Y):
-    return [np.ones_like(X), np.zeros_like(X)]
+    u = np.ones_like(X)
+    v = np.zeros_like(X)
+    u[:20,:20] = 0.5
+    v[:20,:20] = 0.25
+    u += 0.1*np.random.standard_normal(X.shape)
+    v += 0.1*np.random.standard_normal(X.shape)
+
+    return [u,v]
 
 
-def reaction_function(u,v, parameters = [1.0]):
-    # parameters[0]: angular velocity
-    w = parameters[0]
-    return [w*v, -w*u]
+def reaction_function(u,v, parameters = [1.0, 1.0]):
+    F = parameters[1]
+    k = parameters[0]
+    return [-u*v**2 + F*(1-u), u*v**2 - (k+F)*v]
 
 
-solver = Solver([0.0,1.0], [0.0,1.0], 20, initial_conditions)
+solver = Solver([0.0, 2.5], [0.0,2.5], 256, initial_conditions)
 solver.set_reactionFunction(reaction_function)
-t = np.linspace(0,2*np.pi,100)
-u, v = solver.solve(t,[.5,1.0, 2.0])
-
+t = np.linspace(0,10000,10)
+u, v = solver.solve(t,[2E-5, 1E-5, 0.06, 0.035])
 T,Y,X = np.meshgrid(t,solver.y,solver.x, indexing = 'ij')
 
-plt.plot(t, u[:,10,10], label = 'u')
-plt.plot(t, v[:,10,10], label = 'v')
-plt.legend()
-plt.show()
+for i in range(len(t)):
+    plt.imshow(u[i])
+    plt.show()
