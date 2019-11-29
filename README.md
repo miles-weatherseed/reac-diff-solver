@@ -70,7 +70,28 @@ This information, along with the values of parameters and the size and resolutio
 ![](examples/GrayScottEquations_Spots.gif) ![](examples/GrayScottEquations_Stripes1.gif)
 
 ## Parameter inference
-The user also has the option to tackle to problem in reverse, by providing some observed time series of u and v
+The user also has the option to tackle to problem in reverse, by providing some observed time series of u and v and recovering the values of the underlying system's parameters using inference. 
+
+The system is set up in much the same way as the solving problem. First, we provide the inference class with the observed data
+
+```
+inference = Inference(u_data, v_data, times)
+```
+
+Next, we set the boundaries for the domain under consideration and provide a reaction function if we are expecting one
+
+
+```
+inference.set_model(xBounds, yBounds)
+inference.set_reaction_function(function)
+```
+
+Once this is setup, we simply call the function *fit_params* which uses the Nelder-Mead algorithm to minimize an L2 error cost function. Note, this is not a trivial process and it will likely take a long time even on a fast machine. The user has to provide an initial estimate of the parameters in the form of *x0* which is a list *[D_u, D_v, ...]*.
+
+
+```
+print(inference.fit_params(x0))
+```
 
 ## Unit Testing
 To run the unit tests, first navigate to the src directory and then use the `unittest` module like this:
