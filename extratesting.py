@@ -1,4 +1,4 @@
-from src.solver import Solver
+from reac_diff_solver.solver import Solver
 import numpy as np
 import matplotlib.pyplot as plt
 

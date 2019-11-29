@@ -1,6 +1,6 @@
-from src.solver import Solver
+from reac_diff_solver.solver import Solver
 import numpy as np
-from src.animation import animate
+from reac_diff_solver.animation import animate
 
 def initial_conditions(X,Y):
     u = np.ones_like(X)

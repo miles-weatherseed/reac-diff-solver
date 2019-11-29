@@ -2,6 +2,19 @@ import unittest
 import numpy as np
 from reac_diff_solver.solver import Solver
 
+def uniform_initial_conditions(X,Y):
+    """
+    Creates uniform initial conditions with u = 1, v = 0
+    """
+    return [np.ones_like(X),np.zeros_like(X)]
+
+def oscillation_reactionfunction(u,v, parameters):
+    """
+    Reaction function with a sinusoidal exact solution.
+    """
+    w = parameters[0] # angular speed
+    return [w*v, -w*u]
+
 class SolverTest(unittest.TestCase):
     def test_set_grid(self):
         testxbounds = np.random.random(2)
@@ -9,8 +22,8 @@ class SolverTest(unittest.TestCase):
         testgridsize = 50
         testfun = lambda X,Y: [np.sin(4*np.pi*X) * np.sin(2*np.pi*Y), np.sin(4*np.pi*X) * np.sin(2*np.pi*Y)]
         # Expected values
-        expected_x = np.linspace(testxbounds[0], testxbounds[1], testgridsize+1)[:-1]
-        expected_y = np.linspace(testybounds[0], testybounds[1], testgridsize+1)[:-1]
+        expected_x = np.linspace(testxbounds[0], testxbounds[1], testgridsize + 1)[:-1]
+        expected_y = np.linspace(testybounds[0], testybounds[1], testgridsize + 1)[:-1]
         expected_X, expected_Y = np.meshgrid(expected_x, expected_y)
         # Test
         s = Solver(np.random.random(2), np.random.random(2), np.random.randint(1,100), testfun)
@@ -19,8 +32,8 @@ class SolverTest(unittest.TestCase):
         self.assertTrue(np.array_equal(s.xBounds, testxbounds))
         self.assertTrue(np.array_equal(s.yBounds, testybounds))
         self.assertEqual(s.gridSize, testgridsize)
-        self.assertEqual(s.xStepLength, (testxbounds[1] - testxbounds[0])/(testgridsize + 1))
-        self.assertEqual(s.yStepLength, (testybounds[1] - testybounds[0])/(testgridsize + 1))
+        self.assertEqual(s.xStepLength, (testxbounds[1] - testxbounds[0])/(testgridsize))
+        self.assertEqual(s.yStepLength, (testybounds[1] - testybounds[0])/(testgridsize))
         self.assertTrue(np.array_equal(s.x, expected_x))
         self.assertTrue(np.array_equal(s.y, expected_y))
         self.assertTrue(np.array_equal(s.X, expected_X))
@@ -54,6 +67,24 @@ class SolverTest(unittest.TestCase):
         u, v = s.solve(testtimes, testparams)
         self.assertTupleEqual(u.shape, (2, 100, 100))
         self.assertTupleEqual(v.shape, (2, 100, 100))
+
+    def test_solve_oscillation(self):
+        testtimes = np.linspace(0,2*np.pi, 20)
+        for w in [1.0, 2.0, 3.0]: # angular speed
+            testparams = np.array([0.01, 0.01, w])
+            s = Solver([0.0, 1.0], [0.0, 1.0], 20, uniform_initial_conditions)
+            s.set_reactionFunction(oscillation_reactionfunction)
+            s.set_timeStepLength(0.0001)
+            u, v = s.solve(testtimes, testparams)
+
+            for i in range(len(testtimes)):
+                # solution remains uniform
+                self.assertAlmostEqual(np.std(u[i]), 0)
+                self.assertAlmostEqual(np.std(v[i]), 0)
+
+                # solution is sine & cosine with given angular speed
+                self.assertAlmostEqual(u[i,10,10], np.cos(w * testtimes[i]), places = 3)
+                self.assertAlmostEqual(v[i,10,10], -np.sin(w * testtimes[i]), places = 3)
 
 if __name__ == "__main__":
     unittest.main()

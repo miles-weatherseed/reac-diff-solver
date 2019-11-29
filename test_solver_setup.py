@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from src.solver import Solver
+from reac_diff_solver.solver import Solver
 
 class TestModel(unittest.TestCase):
     xbounds = [0.0, 2.0]
