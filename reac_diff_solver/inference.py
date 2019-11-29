@@ -45,9 +45,9 @@ class Inference(Solver):
     def set_reaction_function(self, function):
         '''
         This is optional. We can choose to provide a nonlinear term to our system.
+
         :param function: calculates the value of the reaction terms at the given u and v
-        :type function: function that takes two numpy arrays (containing values of u and v) and a list of parameters
-        and returns a list of two numpy arrays
+        :type function: function that takes two numpy arrays (containing values of u and v) and a list of parameters and returns a list of two numpy arrays
         '''
 
         self.solver.set_reactionFunction(function)
@@ -55,6 +55,7 @@ class Inference(Solver):
     def _error_func(self):
         '''
         Returns L2 error between output using current proposed set of parameters and the observed data
+
         :return tot_error: the total sum of L2 errors at each timestep between the true u,v values and the solved values
         '''
 
@@ -69,6 +70,7 @@ class Inference(Solver):
         '''
         Takes newly proposed set of parameter values and returns the L2 error between the values of u,v given by the
         solver with these values and the values of u,v from the input
+
         :param parametervalues: the proposed set of parameter values at this point in the optimization
         :return: the L2 error with these parameters
         '''
@@ -80,6 +82,7 @@ class Inference(Solver):
         '''
         The master function to call. Fits parameters from some initial estimate by minimizing the cost function using
         the Nelder-Mead method.
+
         :param x0: the initial estimate of parameters
         :return best_fit_parameters: a vector of the fitted parameters
         '''
