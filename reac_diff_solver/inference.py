@@ -1,5 +1,5 @@
 from scipy import optimize
-from solver import Solver
+from reac_diff_solver.solver import Solver
 import numpy as np
 
 '''
@@ -52,7 +52,7 @@ class Inference(Solver):
 
         self.solver.set_reactionFunction(function)
 
-    def error_func(self):
+    def _error_func(self):
         '''
         Returns L2 error between output using current proposed set of parameters and the observed data
         :return tot_error: the total sum of L2 errors at each timestep between the true u,v values and the solved values
@@ -74,7 +74,7 @@ class Inference(Solver):
         '''
 
         self.u_output, self.v_output = self.solver.solve(self.times, parametervalues)
-        return self.error_func()
+        return self._error_func()
 
     def fit_params(self, x0):
         '''
