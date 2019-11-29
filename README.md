@@ -36,7 +36,7 @@ By default, the solver class expects a system of the format:
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" title="\frac{\partial v}{\partial t} = D_v \nabla^2v." /></a>
 
-Initial conditions are provided by defined via a function created by the user. For example, to provide the initial conditions for the Gray-Scott Equations, the user defines the function
+Initial conditions are defined via a function created by the user. For example, to provide the initial conditions for the Gray-Scott Equations, the user defines the function
 
 ```
 def initial_conditions(X,Y):
@@ -65,11 +65,12 @@ def Gray_Scott_reaction_terms(u,v, parameters = [1.0, 1.0]):
     return [-u*v**2 + F*(1-u), u*v**2 - (k+F)*v] [u,v]
     
 ```
-This information, along with the values of parameters and the size and resolution of the finite differences grid, are then passed to the solver class. The output provides the values of u and v at each timestep at each point in the grid. This can then be visualized using in-built animation features, producing visually appealing outputs like the gif below.
+This information, along with the values of parameters and the size and resolution of the finite differences grid, are then passed to the solver class. The output provides the values of u and v at each timestep at each point in the grid. This can then be visualized using in-built animation features, producing visually appealing outputs like the gifs below.
 
 ![](examples/GrayScottEquations_Spots.gif) ![](examples/GrayScottEquations_Stripes1.gif)
 
 ## Parameter inference
+The user also has the option to tackle to problem in reverse, by providing some observed time series of u and v
 
 ## Unit Testing
 To run the unit tests, first navigate to the src directory and then use the `unittest` module like this:
