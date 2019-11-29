@@ -46,7 +46,10 @@ t = np.linspace(0,30000,100)
 # parameters are the diffusion coefficients of the u component and the v component respectively. The rest of the
 # parameters are passed to the reaction function. In this case they represent the paramenets k and F in the Gray-Scott
 # equations.
-u, v = solver.solve(t,[2E-5, 1E-5, 0.063, 0.032])
+
+# spots: 0.063, 0.032
+# stripes: 0.06, 0.04
+u, v = solver.solve(t,[2E-5, 1E-5, 0.06, 0.025], True)
 
 # Create an animation of the solution and save it to a file called 'GrayScottEquationsAnimation'
-animate(u,10,"GrayScottEquationsAnimation")
+animate(u,10,"GrayScottEquations_Stripes")
