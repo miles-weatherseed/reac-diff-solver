@@ -2,18 +2,6 @@ import unittest
 import numpy as np
 from reac_diff_solver.solver import Solver
 
-def uniform_initial_conditions(X,Y):
-    """
-    Creates uniform initial conditions with u = 1, v = 0
-    """
-    return [np.ones_like(X),np.zeros_like(X)]
-
-def oscillation_reactionfunction(u,v, parameters):
-    """
-    Reaction function with a sinusoidal exact solution.
-    """
-    w = parameters[0] # angular speed
-    return [w*v, -w*u]
 
 class SolverTest(unittest.TestCase):
     def test_set_grid(self):
@@ -69,6 +57,20 @@ class SolverTest(unittest.TestCase):
         self.assertTupleEqual(v.shape, (2, 100, 100))
 
     def test_solve_oscillation(self):
+
+        def uniform_initial_conditions(X,Y):
+            """
+            Creates uniform initial conditions with u = 1, v = 0
+            """
+            return [np.ones_like(X),np.zeros_like(X)]
+
+        def oscillation_reactionfunction(u,v, parameters):
+            """
+            Reaction function with a sinusoidal exact solution.
+            """
+            w = parameters[0] # angular speed
+            return [w*v, -w*u]
+
         testtimes = np.linspace(0,2*np.pi, 20)
         for w in [1.0, 2.0, 3.0]: # angular speed
             testparams = np.array([0.01, 0.01, w])
@@ -85,6 +87,25 @@ class SolverTest(unittest.TestCase):
                 # solution is sine & cosine with given angular speed
                 self.assertAlmostEqual(u[i,10,10], np.cos(w * testtimes[i]), places = 3)
                 self.assertAlmostEqual(v[i,10,10], -np.sin(w * testtimes[i]), places = 3)
+
+    def test_solve_2dheatequation(self):
+        def sinusoidal_initial_conditions(X,Y):
+            """
+            Creates initial conditions with a sinusoidal wave in the x and y directions.
+            """
+            return [np.sin(4*np.pi*X) * np.sin(2*np.pi*Y), np.sin(4*np.pi*X) * np.sin(2*np.pi*Y)]
+
+        testtimes = np.linspace(0.0, 1.0, 20)
+        testparams = [0.05, 0.01] # diffusion coefficients
+        s = Solver([0.0, 1.0],[0.0, 1.0], 50, sinusoidal_initial_conditions)
+        s.set_timeStepLength(0.0001)
+        u, v = s.solve(testtimes, testparams)
+
+        for i in range(len(testtimes)):
+            for j in range(50):
+                for k in range(50):
+                    self.assertAlmostEqual(u[i,j,k], np.sin(4*np.pi*s.X[j,k]) * np.sin(2*np.pi*s.Y[j,k]) * np.exp(-testparams[0]*20*np.pi**2 * testtimes[i]), places = 2)
+                    self.assertAlmostEqual(v[i,j,k], np.sin(4*np.pi*s.X[j,k]) * np.sin(2*np.pi*s.Y[j,k]) * np.exp(-testparams[1]*20*np.pi**2 * testtimes[i]), places = 2)
 
 if __name__ == "__main__":
     unittest.main()
