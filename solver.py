@@ -12,15 +12,15 @@ class Solver:
         self.initialConditions_u = self.initial_condition_function(self.X, self.Y)[0]
         self.initialConditions_v = self.initial_condition_function(self.X, self.Y)[1]
 
-        self.reactionFunction = lambda u, v: [0,0]
+        self.reactionFunction = lambda u, v, parameters: [0,0]
         self.timeStepLength = 0.0001
 
     def set_grid(self, xBounds, yBounds, gridSize):
         self.xBounds = xBounds
         self.yBounds = yBounds
         self.gridSize = gridSize
-        self.xStepLength = (xBounds[1] - xBounds[0])/(gridSize + 1) # +1 improves solution but inconsistent ???
-        self.yStepLength = (yBounds[1] - yBounds[0])/(gridSize + 1)
+        self.xStepLength = (xBounds[1] - xBounds[0])/(gridSize) # +1 improves solution but inconsistent ???
+        self.yStepLength = (yBounds[1] - yBounds[0])/(gridSize)
         self.x = np.linspace(self.xBounds[0], self.xBounds[1], gridSize+1)[:-1]
         self.y = np.linspace(self.yBounds[0], self.yBounds[1], gridSize+1)[:-1]
         self.X, self.Y = np.meshgrid(self.x, self.y) # create mesh
@@ -81,10 +81,15 @@ class Solver:
 
         t = times[0]
         for i in range(1,len(times)):
+            j = 1
             while t < times[i]:
-                uvec = conjugate_gradients(matrix_u, uvec + self.timeStepLength * self.reactionFunction(uvec, vvec)[0], uvec)[0]
-                vvec = conjugate_gradients(matrix_v, vvec + self.timeStepLength * self.reactionFunction(uvec, vvec)[1], vvec)[0]
-                t += self.timeStepLength
+                uvec = conjugate_gradients(matrix_u, uvec + self.timeStepLength * self.reactionFunction(uvec, vvec, parameters[2:])[0], uvec)[0]
+                vvec = conjugate_gradients(matrix_v, vvec + self.timeStepLength * self.reactionFunction(uvec, vvec, parameters[2:])[1], vvec)[0]
+                #t += self.timeStepLength
+                t = times[i-1] + j*self.timeStepLength
+                j += 1
+
+            #print(t)
 
             self.uSolution[i] = uvec.reshape(self.gridSize, self.gridSize)
             self.vSolution[i] = vvec.reshape(self.gridSize, self.gridSize)

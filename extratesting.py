@@ -3,33 +3,84 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-mode = 1.0
-D1 = 0.05
-D2 = 0.0
-def zero_mode_solution(x, y, t):
-    return np.sin(4*np.pi*mode*x)*np.exp(-D1*t*(4*np.pi*mode)**2)
+def test_1d_diffusion():
+    mode = 1.0
+    D1 = 0.05
+    D2 = 0.0
+    t = np.linspace(0, 1.0, 11)
 
-def initial_conditions(x, y):
-    return [zero_mode_solution(x, y, 0), 1.0]
+    def exact(x, y, t):
+        return np.sin(4 * np.pi * mode * x) * np.exp(-D1 * t * (4 * np.pi * mode) ** 2)
 
-def reaction_function(u,v):
-    return [0, v*(2-v)]
+    def initial_conditions(x, y):
+        return [exact(x, y, 0), 1.0]
 
-solver = Solver([0.0, 1.0], [0.0, 1.0], 200, initial_conditions)
-t = np.linspace(0,0.1,11)
-solver.set_reactionFunction(reaction_function)
-u,v = solver.solve(t,[D1,D2])
+    solver = Solver([0.0, 1.0], [0.0, 1.0], 200, initial_conditions)
+    solver.set_timeStepLength(0.001)
 
-T,Y,X = np.meshgrid(t,solver.y,solver.x, indexing = 'ij')
-solution = zero_mode_solution(X, Y, T)
+    u, v = solver.solve(t, [D1, D2, 0])
 
-plt.figure()
-plt.plot(solver.x, solution[1,0,:])
-plt.plot(solver.x, u[1,100,:])
-error = solution[1,0,:] - u[1,100,:]
-print(np.max(error))
-plt.show()
+    T, Y, X = np.meshgrid(t, solver.y, solver.x, indexing='ij')
+    solution = exact(X, Y, T)
 
+    plt.figure()
+    for i in range(0, len(t)):
+        plt.plot(solver.x, solution[i, 20, :])
+    plt.show()
+
+    plt.figure()
+    for i in range(0, len(t)):
+        plt.plot(solver.x, u[i, 20, :])
+
+    plt.show()
+
+
+    error = solution - u
+    print(np.max(error))
+
+def test_1d_reaction():
+    mode = 1.0
+    D1 = 0.05
+    D2 = 0.0
+    t = np.linspace(0, 1.0, 11)
+    k1 = 1.0
+    k2 = 2.0
+
+    def exact(x, y, t):
+        return [1.0 * np.exp(-k1*t), 2.0*np.exp(-k2*t)]
+
+    def initial_conditions(x, y):
+        return exact(x, y, 0)
+
+    solver = Solver([0.0, 1.0], [0.0, 1.0], 200, initial_conditions)
+    solver.set_timeStepLength(0.001)
+
+    def reaction_function(u, v, K):
+        return [-K[0] * u, - K[1] * v]
+
+    solver.set_reactionFunction(reaction_function)
+
+    u, v = solver.solve(t, [D1, D2, k1, k2])
+
+    T, Y, X = np.meshgrid(t, solver.y, solver.x, indexing='ij')
+    solution = exact(X, Y, T)
+
+    plt.figure()
+    plt.plot(t, u[:, 20, 20])
+    plt.plot(t, v[:, 20, 20])
+
+    plt.show()
+
+
+
+#def reaction_function(u,v):
+ #   return [0, v*(2-v)]
+
+
+
+
+
+"""
 print(solver.diff_v)
 
 plt.figure()
@@ -69,3 +120,10 @@ ax = fig.gca(projection='3d')
 ax.plot_surface(solver.X,solver.Y,v[1])
 ax.plot_surface(solver.X,solver.Y,solution[1])
 plt.show()
+"""
+
+if __name__ == '__main__':
+    test_1d_reaction()
+    #test_1d_diffusion()
+
+
