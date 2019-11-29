@@ -27,14 +27,7 @@ Clone the repo and install via pip:
 Example
 -------
 
-.. code-block:: python
-
-    import numpy as np
-    from reac_diff_solver import Solver
-    
-    solver = Solver()
-    solver.solve()
-
+See README for a detailed example on how to use the library.
 
 API Reference
 =============

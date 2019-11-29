@@ -56,13 +56,7 @@
 </div>
 <div class="section" id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">reac_diff_solver</span> <span class="kn">import</span> <span class="n">Solver</span>
-
-<span class="n">solver</span> <span class="o">=</span> <span class="n">Solver</span><span class="p">()</span>
-<span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-</pre></div>
-</div>
+<p>See README for a detailed example on how to use the library.</p>
 </div>
 </div>
 <div class="section" id="module-reac_diff_solver.conjgrad">
@@ -106,18 +100,30 @@
 <dt id="reac_diff_solver.inference.Inference.cost_func">
 <code class="sig-name descname">cost_func</code><span class="sig-paren">(</span><em class="sig-param">parametervalues</em><span class="sig-paren">)</span><a class="headerlink" href="#reac_diff_solver.inference.Inference.cost_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes newly proposed set of parameter values and returns the L2 error between the values of u,v given by the
-solver with these values and the values of u,v from the input
-:param parametervalues: the proposed set of parameter values at this point in the optimization
-:return: the L2 error with these parameters</p>
+solver with these values and the values of u,v from the input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parametervalues</strong> – the proposed set of parameter values at this point in the optimization</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the L2 error with these parameters</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="reac_diff_solver.inference.Inference.fit_params">
 <code class="sig-name descname">fit_params</code><span class="sig-paren">(</span><em class="sig-param">x0</em><span class="sig-paren">)</span><a class="headerlink" href="#reac_diff_solver.inference.Inference.fit_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>The master function to call. Fits parameters from some initial estimate by minimizing the cost function using
-the Nelder-Mead method.
-:param x0: the initial estimate of parameters
-:return best_fit_parameters: a vector of the fitted parameters</p>
+the Nelder-Mead method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x0</strong> – the initial estimate of parameters</p>
+</dd>
+<dt class="field-even">Return best_fit_parameters</dt>
+<dd class="field-even"><p>a vector of the fitted parameters</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -139,10 +145,12 @@ and provide some initial conditions for our system.</p>
 <dl class="method">
 <dt id="reac_diff_solver.inference.Inference.set_reaction_function">
 <code class="sig-name descname">set_reaction_function</code><span class="sig-paren">(</span><em class="sig-param">function</em><span class="sig-paren">)</span><a class="headerlink" href="#reac_diff_solver.inference.Inference.set_reaction_function" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is optional. We can choose to provide a nonlinear term to our system.
-:param function: calculates the value of the reaction terms at the given u and v
-:type function: function that takes two numpy arrays (containing values of u and v) and a list of parameters
-and returns a list of two numpy arrays</p>
+<dd><p>This is optional. We can choose to provide a nonlinear term to our system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>function</strong> (<em>function that takes two numpy arrays</em><em> (</em><em>containing values of u and v</em><em>) </em><em>and a list of parameters and returns a list of two numpy arrays</em>) – calculates the value of the reaction terms at the given u and v</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -154,54 +162,82 @@ and returns a list of two numpy arrays</p>
 <dl class="method">
 <dt id="reac_diff_solver.solver.Solver.set_grid">
 <code class="sig-name descname">set_grid</code><span class="sig-paren">(</span><em class="sig-param">xBounds</em>, <em class="sig-param">yBounds</em>, <em class="sig-param">gridSize</em><span class="sig-paren">)</span><a class="headerlink" href="#reac_diff_solver.solver.Solver.set_grid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the grid parameters.
-:param xBounds: x-range of the problem
-:type xBounds: list of two floats
-:param yBounds: y-range of the problem
-:type yBounds: list of two floats
-:param gridSize: number of gridpoints to use (in both the x- &amp; y-direction)
-:type gridSize: int
-:return:</p>
+<dd><p>Sets the grid parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xBounds</strong> (<em>list of two floats</em>) – x-range of the problem</p></li>
+<li><p><strong>yBounds</strong> (<em>list of two floats</em>) – y-range of the problem</p></li>
+<li><p><strong>gridSize</strong> (<em>int</em>) – number of gridpoints to use (in both the x- &amp; y-direction)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="reac_diff_solver.solver.Solver.set_initialConditions">
 <code class="sig-name descname">set_initialConditions</code><span class="sig-paren">(</span><em class="sig-param">initial_condition_function</em><span class="sig-paren">)</span><a class="headerlink" href="#reac_diff_solver.solver.Solver.set_initialConditions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the initial conditions used by the solver.
-:param initial_condition_function: calculates the values of u and v at t=0 at each gridpoint
-:type initial_condition_function: function that takes two 2d numpy arrays and returns a list of two 2d numpy arrays
-:return:</p>
+<dd><p>Set the initial conditions used by the solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>initial_condition_function</strong> (<em>function that takes two 2d numpy arrays and returns a list of two 2d numpy arrays</em>) – calculates the values of u and v at t=0 at each gridpoint</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="reac_diff_solver.solver.Solver.set_reactionFunction">
 <code class="sig-name descname">set_reactionFunction</code><span class="sig-paren">(</span><em class="sig-param">function</em><span class="sig-paren">)</span><a class="headerlink" href="#reac_diff_solver.solver.Solver.set_reactionFunction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the reaction term of the equation (defaults to zero).
-:param function: calculates the value of the reaction terms at the given u and v
-:type function: function that takes two numpy arrays (containing values of u and v) and a list of parameters and returns a list of two numpy arrays
-:return:</p>
+<dd><p>Set the reaction term of the equation (defaults to zero).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>function</strong> (<em>function that takes two numpy arrays</em><em> (</em><em>containing values of u and v</em><em>) </em><em>and a list of parameters and returns a list of two numpy arrays</em>) – calculates the value of the reaction terms at the given u and v</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="reac_diff_solver.solver.Solver.set_timeStepLength">
 <code class="sig-name descname">set_timeStepLength</code><span class="sig-paren">(</span><em class="sig-param">length</em><span class="sig-paren">)</span><a class="headerlink" href="#reac_diff_solver.solver.Solver.set_timeStepLength" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the size of the timestep used by the solver.
-:param length: timestep
-:type length: float
-:return:</p>
+<dd><p>Set the size of the timestep used by the solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>length</strong> (<em>float</em>) – timestep</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="reac_diff_solver.solver.Solver.solve">
 <code class="sig-name descname">solve</code><span class="sig-paren">(</span><em class="sig-param">times</em>, <em class="sig-param">parameters</em>, <em class="sig-param">printProgress=False</em><span class="sig-paren">)</span><a class="headerlink" href="#reac_diff_solver.solver.Solver.solve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solves the equation at the given times.
-:param times: times at which the solution is desired.
-:type times: list of floats
-:param parameters: parameters to give to the reaction function
-:type parameters: list
-:param printProgress: whether or not to print progress updates
-:return: the solution of u and v at the given times
-:rtype: list of two 2d numpy arrays (self.gridSize by self.gridSize)</p>
+<dd><p>Solves the equation at the given times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> (<em>list of floats</em>) – times at which the solution is desired.</p></li>
+<li><p><strong>parameters</strong> (<em>list</em>) – parameters to give to the reaction function</p></li>
+<li><p><strong>printProgress</strong> – whether or not to print progress updates</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the solution of u and v at the given times</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of two 2d numpy arrays (self.gridSize by self.gridSize)</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
