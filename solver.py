@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.sparse
+import scipy.sparse.linalg
 from ConjugateGradients import conjugate_gradients
 import matplotlib.pyplot as plt
 
@@ -18,7 +19,7 @@ class Solver:
         self.xBounds = xBounds
         self.yBounds = yBounds
         self.gridSize = gridSize
-        self.xStepLength = (xBounds[1] - xBounds[0])/(gridSize + 1)
+        self.xStepLength = (xBounds[1] - xBounds[0])/(gridSize + 1) # +1 improves solution but inconsistent ???
         self.yStepLength = (yBounds[1] - yBounds[0])/(gridSize + 1)
         self.x = np.linspace(self.xBounds[0], self.xBounds[1], gridSize+1)[:-1]
         self.y = np.linspace(self.yBounds[0], self.yBounds[1], gridSize+1)[:-1]
@@ -75,8 +76,8 @@ class Solver:
         vvec = self.vSolution[0].reshape(-1)
 
         I = scipy.sparse.eye(self.gridSize**2)
-        matrix_u = I - self.timeStepLength * self.diff_u * self.laplacian
-        matrix_v = I - self.timeStepLength * self.diff_v * self.laplacian
+        matrix_u = (I - self.timeStepLength * self.diff_u * self.laplacian)
+        matrix_v = (I - self.timeStepLength * self.diff_v * self.laplacian)
 
         t = times[0]
         for i in range(1,len(times)):

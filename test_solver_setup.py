@@ -4,7 +4,7 @@ from solver import Solver
 
 class TestModel(unittest.TestCase):
     xbounds = [0.0, 2.0]
-    ybounds = [0.0, 2.0]
+    ybounds = [0.0, 4.0]
     gridsize = 4
 
     def initial_function(self, X, Y):
@@ -25,6 +25,13 @@ class TestModel(unittest.TestCase):
     def test_init(self):
         self.assertEqual(self.sol.xBounds, self.xbounds)
         self.assertEqual(self.sol.yBounds, self.ybounds)
+        self.assertEqual(self.sol.gridSize, self.gridsize)
+        self.assertEqual(self.sol.xStepLength, 0.5)
+        self.assertEqual(self.sol.yStepLength, 1.0)
+        self.assertEqual(self.sol.x[1]- self.sol.x[0], self.sol.xStepLength)
+        self.assertIsNone(np.testing.assert_array_equal(self.sol.x, np.arange(self.xbounds[0], self.xbounds[1], 0.5)))
+        self.assertIsNone(np.testing.assert_array_equal(self.sol.y, np.arange(self.ybounds[0], self.ybounds[1], 1.0)))
+        print(self.sol.x)
 
     def test_matrix(self):
         self.sol.solve([0.1, 0.2, 0.4], [.5, 1.0])

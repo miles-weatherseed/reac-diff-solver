@@ -21,3 +21,6 @@ ax = fig.gca(projection='3d')
 ax.plot_surface(solver.X,solver.Y,v[1])
 ax.plot_surface(solver.X,solver.Y,solution[1])
 plt.show()
+
+
+print(np.max(v[1] - solution[1]))
