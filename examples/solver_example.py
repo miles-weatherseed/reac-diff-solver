@@ -1,6 +1,5 @@
-from reac_diff_solver.solver import Solver
+import reac_diff_solver as rd
 import numpy as np
-from reac_diff_solver.animation import animate
 
 # Define the initial conditions to be used by the solver. This is a function that takes two 2d numpy arrays which
 # contain the x & y coordinates at each grid point and returns a list of two 2d numpy arrays (of the same shape) which
@@ -30,13 +29,13 @@ def Gray_Scott_reaction_terms(u,v, parameters = [1.0, 1.0]):
 
 # Initialise the Solver. This creates a 256 x 256 grid running from x=0 to x=2.5 and y=0 to y=2.5 and calculates the
 # initial conditions at each point on this grid.
-solver = Solver([0.0, 2.5], [0.0,2.5], 256, initial_conditions)
+solver = rd.Solver([0.0, 2.5], [0.0,2.5], 256, initial_conditions)
 
 # Set the reaction terms.
 solver.set_reactionFunction(Gray_Scott_reaction_terms)
 
 # Set the timestep to be used for the integration.
-solver.set_timeStepLength(1)
+solver.set_timeStepLength(10)
 
 # Create a numpy array of times at which to find the solution. This creates an array with 100 timepoints between t = 0
 # and t = 30000
@@ -52,4 +51,4 @@ u, v = solver.solve(t,[2E-5, 1E-5, 0.063, 0.032], True)
 # 5000, and the timestep to 1)
 
 # Create an animation of the solution and save it to a file called 'GrayScottEquationsAnimation'
-animate(u,10,"GrayScottEquations")
+rd.animate(u,10,"GrayScottEquations")
