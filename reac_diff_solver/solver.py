@@ -4,8 +4,20 @@ from reac_diff_solver.conjgrad import conjugate_gradients
 
 
 class Solver:
-        # Constructor
     def __init__(self, xBounds, yBounds, gridSize, initial_condition_function):
+        """
+        Initialises a Solver with the given bounds, gridsize and initial conditions. By default it has no reaction
+        terms. These can be set using set_reactionFunction
+        :param xBounds: x-range of the problem
+        :type xBounds: list of two floats
+        :param yBounds: y-range of the problem
+        :type yBounds: list of two floats
+        :param gridSize: number of gridpoints to use (in both the x- & y-direction)
+        :type gridSize: int
+        :param initial_condition_function: calculates the values of u and v at t=0 at each gridpoint
+        :type initial_condition_function: function that takes two 2d numpy arrays and returns a list of two 2d numpy arrays
+        """
+
         self.initial_condition_function = initial_condition_function
         self.set_grid(xBounds,yBounds,gridSize)
         self.initialConditions_u = self.initial_condition_function(self.X, self.Y)[0]
@@ -15,6 +27,16 @@ class Solver:
         self.timeStepLength = 0.1
 
     def set_grid(self, xBounds, yBounds, gridSize):
+        """
+        Sets the grid parameters.
+        :param xBounds: x-range of the problem
+        :type xBounds: list of two floats
+        :param yBounds: y-range of the problem
+        :type yBounds: list of two floats
+        :param gridSize: number of gridpoints to use (in both the x- & y-direction)
+        :type gridSize: int
+        :return:
+        """
         self.xBounds = xBounds
         self.yBounds = yBounds
         self.gridSize = gridSize
@@ -26,25 +48,49 @@ class Solver:
         self.initialConditions = self.initial_condition_function(self.X, self.Y) # calculate initial conditions on new mesh
 
     def set_reactionFunction(self, function):
+        """
+        Set the reaction term of the equation (defaults to zero).
+        :param function: calculates the value of the reaction terms at the given u and v
+        :type function: function that takes two numpy arrays (containing values of u and v) and a list of parameters and returns a list of two numpy arrays
+        :return:
+        """
         self.reactionFunction = function
 
     def set_initialConditions(self, initial_condition_function):
+        """
+        Set the initial conditions used by the solver.
+        :param initial_condition_function: calculates the values of u and v at t=0 at each gridpoint
+        :type initial_condition_function: function that takes two 2d numpy arrays and returns a list of two 2d numpy arrays
+        :return:
+        """
         self.initial_condition_function = initial_condition_function
         self.initialConditions_u = self.initial_condition_function(self.X, self.Y)[0]
         self.initialConditions_v = self.initial_condition_function(self.X, self.Y)[1]
 
     def set_timeStepLength(self, length):
+        """
+        Set the size of the timestep used by the solver.
+        :param length: timestep
+        :type length: float
+        :return:
+        """
         self.timeStepLength = length
 
     def _create_arrays(self, times):
-        """Create arrays to store solution at given times"""
+        """
+        Create arrays to store solution at given times
+        :param times: times at which to find the solution
+        :type times: list of floats
+        """
 
         self.uSolution = np.zeros((len(times), self.gridSize, self.gridSize))
         self.vSolution = np.zeros((len(times), self.gridSize, self.gridSize))
 
 
     def _create_fdmatrix(self):
-        """ Make FD Matrix for Periodic BCs"""
+        """
+        Creates the finite difference matrix for periodic boundary conditions.
+        """
         n = self.gridSize
         e = np.ones(n)
         diagonals = [e, -2 * e, e]
@@ -61,6 +107,15 @@ class Solver:
 
 
     def solve(self, times, parameters):
+        """
+        Solves the equation at the given times.
+        :param times: times at which the solution is desired.
+        :type times: list of floats
+        :param parameters: parameters to give to the reaction function
+        :type parameters: list
+        :return: the solution of u and v at the given times
+        :rtype: list of two 2d numpy arrays (self.gridSize by self.gridSize)
+        """
         # first two parameters are diffusion coefficients
         self.diff_u = parameters[0]
         self.diff_v = parameters[1]
