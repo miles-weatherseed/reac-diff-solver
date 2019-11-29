@@ -1,5 +1,5 @@
-from solver import Solver
 import numpy as np
+from solver import Solver
 import matplotlib.pyplot as plt
 
 
@@ -14,7 +14,7 @@ def initial_conditions(X,Y):
     return [u,v]
 
 
-def reaction_function(u,v, parameters = [1.0, 1.0]):
+def reaction_function(u,v, parameters=[1.0,1.0]):
     F = parameters[1]
     k = parameters[0]
     return [-u*v**2 + F*(1-u), u*v**2 - (k+F)*v]
@@ -23,7 +23,7 @@ def reaction_function(u,v, parameters = [1.0, 1.0]):
 solver = Solver([0.0, 2.5], [0.0,2.5], 256, initial_conditions)
 solver.set_reactionFunction(reaction_function)
 t = np.linspace(0,10000,10)
-u, v = solver.solve(t,[2E-5, 1E-5, 0.06, 0.035])
+u, v = solver.solve(t,[2E-5, 1E-5, 0.05, 0.018])
 T,Y,X = np.meshgrid(t,solver.y,solver.x, indexing = 'ij')
 
 for i in range(len(t)):
