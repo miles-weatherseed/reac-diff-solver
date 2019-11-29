@@ -40,12 +40,12 @@ class Solver:
         self.xBounds = xBounds
         self.yBounds = yBounds
         self.gridSize = gridSize
-        self.xStepLength = (xBounds[1] - xBounds[0])/(gridSize) # +1 improves solution but inconsistent ???
-        self.yStepLength = (yBounds[1] - yBounds[0])/(gridSize)
-        self.x = np.linspace(self.xBounds[0], self.xBounds[1], gridSize+1)[:-1]
-        self.y = np.linspace(self.yBounds[0], self.yBounds[1], gridSize+1)[:-1]
-        self.X, self.Y = np.meshgrid(self.x, self.y) # create mesh
-        self.initialConditions = self.initial_condition_function(self.X, self.Y) # calculate initial conditions on new mesh
+        self.xStepLength = (xBounds[1] - xBounds[0])/(gridSize)                 # calculate x step length
+        self.yStepLength = (yBounds[1] - yBounds[0])/(gridSize)                 # calculate y step length
+        self.x = np.linspace(self.xBounds[0], self.xBounds[1], gridSize+1)[:-1] # generate coordinates of grid points & get rid of one of the boundary points
+        self.y = np.linspace(self.yBounds[0], self.yBounds[1], gridSize+1)[:-1] # generate coordinates of grid points & get rid of one of the boundary points
+        self.X, self.Y = np.meshgrid(self.x, self.y)                            # create mesh
+        self.initialConditions = self.initial_condition_function(self.X, self.Y)# calculate initial conditions on new mesh
 
     def set_reactionFunction(self, function):
         """
@@ -64,8 +64,8 @@ class Solver:
         :return:
         """
         self.initial_condition_function = initial_condition_function
-        self.initialConditions_u = self.initial_condition_function(self.X, self.Y)[0]
-        self.initialConditions_v = self.initial_condition_function(self.X, self.Y)[1]
+        self.initialConditions_u = self.initial_condition_function(self.X, self.Y)[0]   # calculate value of the initial conditions for u at the grid points
+        self.initialConditions_v = self.initial_condition_function(self.X, self.Y)[1]   # calculate value of the initial conditions for v at the grid points
 
     def set_timeStepLength(self, length):
         """
@@ -95,7 +95,7 @@ class Solver:
         e = np.ones(n)
         diagonals = [e, -2 * e, e]
         offsets = [-1, 0, 1]
-        L = scipy.sparse.spdiags(diagonals, offsets, n, n, format='csr').tolil()
+        L = scipy.sparse.spdiags(diagonals, offsets, n, n, format='csr').tolil()    # 1d laplacian with no boundary conditions
 
         # periodic boundary conditions
         L[0, -1] = 1
@@ -103,6 +103,7 @@ class Solver:
 
         I = scipy.sparse.eye(n)
 
+        # calculate 2d laplacian using kronecker product
         self.laplacian = scipy.sparse.kron(I, self.xStepLength**-2 * L) + scipy.sparse.kron(self.yStepLength**-2 * L, I)
 
 
@@ -123,25 +124,33 @@ class Solver:
         self._create_arrays(times)
         self._create_fdmatrix()
 
-        self.uSolution[0] = self.initialConditions_u
+        self.uSolution[0] = self.initialConditions_u    # set first entry in solution array to initial condition
         self.vSolution[0] = self.initialConditions_v
 
+        # reshape the initial conditions to create the initial vector to start the integration
         uvec = self.uSolution[0].reshape(-1)
         vvec = self.vSolution[0].reshape(-1)
 
         I = scipy.sparse.eye(self.gridSize**2)
-        matrix_u = (I - self.timeStepLength * self.diff_u * self.laplacian)
-        matrix_v = (I - self.timeStepLength * self.diff_v * self.laplacian)
+        matrix_u = (I - self.timeStepLength * self.diff_u * self.laplacian) # iteration matrix for u
+        matrix_v = (I - self.timeStepLength * self.diff_v * self.laplacian) # iteration matrix for v
 
-        t = times[0]
+        t = times[0] # starting time
         for i in range(1,len(times)):
             j = 1
+
+            # integrate until the next time in the times array
             while t < times[i]:
+                # solve the IMEX equations for u and v, use the values at the previous iteration as the starting point
+                # for the conjugate gradients function, as they should be close to the new value
                 uvec = conjugate_gradients(matrix_u, uvec + self.timeStepLength * self.reactionFunction(uvec, vvec, parameters[2:])[0], uvec)[0]
                 vvec = conjugate_gradients(matrix_v, vvec + self.timeStepLength * self.reactionFunction(uvec, vvec, parameters[2:])[1], vvec)[0]
+
+                # update t & j
                 t = times[i-1] + j*self.timeStepLength
                 j += 1
 
+            # reshape solutions back into 2d arrays of the values at each gridpoint
             self.uSolution[i] = uvec.reshape(self.gridSize, self.gridSize)
             self.vSolution[i] = vvec.reshape(self.gridSize, self.gridSize)
 
