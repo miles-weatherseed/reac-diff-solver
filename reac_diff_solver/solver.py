@@ -107,13 +107,14 @@ class Solver:
         self.laplacian = scipy.sparse.kron(I, self.xStepLength**-2 * L) + scipy.sparse.kron(self.yStepLength**-2 * L, I)
 
 
-    def solve(self, times, parameters):
+    def solve(self, times, parameters, printProgress = False):
         """
         Solves the equation at the given times.
         :param times: times at which the solution is desired.
         :type times: list of floats
         :param parameters: parameters to give to the reaction function
         :type parameters: list
+        :param printProgress: whether or not to print progress updates
         :return: the solution of u and v at the given times
         :rtype: list of two 2d numpy arrays (self.gridSize by self.gridSize)
         """
@@ -137,7 +138,10 @@ class Solver:
 
         t = times[0] # starting time
         for i in range(1,len(times)):
-            j = 1
+            j = 1   # tracks number of steps in the iteration
+
+            if printProgress:
+                print("t=" + str(times[i]))
             # integrate until the next time in the times array
             while t < times[i]:
                 # solve the IMEX equations for u and v, use the values at the previous iteration as the starting point
