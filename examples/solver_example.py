@@ -14,7 +14,7 @@ def initial_conditions(X,Y):
     u[:20,:20] = 0.5
     v[:20,:20] = 0.25
 
-    # add small amount of random noise to break symmetry
+    # add small amount of random noise to break the symmetry
     u += 0.1*np.random.standard_normal(X.shape)
     v += 0.1*np.random.standard_normal(X.shape)
 
@@ -36,7 +36,7 @@ solver = Solver([0.0, 2.5], [0.0,2.5], 256, initial_conditions)
 solver.set_reactionFunction(Gray_Scott_reaction_terms)
 
 # Set the timestep to be used for the integration.
-solver.set_timeStepLength(10)
+solver.set_timeStepLength(1)
 
 # Create a numpy array of times at which to find the solution. This creates an array with 100 timepoints between t = 0
 # and t = 30000
@@ -44,12 +44,12 @@ t = np.linspace(0,30000,100)
 
 # Run the Solver. The solve function takes the array of times and a list of the parameters to be used. The first two
 # parameters are the diffusion coefficients of the u component and the v component respectively. The rest of the
-# parameters are passed to the reaction function. In this case they represent the paramenets k and F in the Gray-Scott
-# equations.
+# parameters are passed to the reaction function. In this case they represent the parameters k and F in the Gray-Scott
+# equations. The final parameter tells the Solver to print out its progress occasionally.
+u, v = solver.solve(t,[2E-5, 1E-5, 0.063, 0.032], True)
 
-# spots: 0.063, 0.032
-# stripes: 0.06, 0.04
-u, v = solver.solve(t,[2E-5, 1E-5, 0.06, 0.025], True)
+# Some other fun parameters to try are k = 0.050, F = 0.040 and k = 0.050, F = 0.018 (reduce the total time duration to
+# 5000, and the timestep to 1)
 
 # Create an animation of the solution and save it to a file called 'GrayScottEquationsAnimation'
-animate(u,10,"GrayScottEquations_Stripes")
+animate(u,10,"GrayScottEquations")

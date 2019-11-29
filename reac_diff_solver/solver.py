@@ -138,9 +138,11 @@ class Solver:
 
         t = times[0] # starting time
         for i in range(1,len(times)):
-            j = 1
+            j = 1   # tracks number of steps in the iteration
+
             if printProgress:
                 print("t=" + str(times[i]))
+
             # integrate until the next time in the times array
             while t < times[i]:
                 # solve the IMEX equations for u and v, use the values at the previous iteration as the starting point
