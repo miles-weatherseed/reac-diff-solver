@@ -67,7 +67,7 @@ def Gray_Scott_reaction_terms(u,v, parameters = [1.0, 1.0]):
 ```
 This information, along with the values of parameters and the size and resolution of the finite differences grid, are then passed to the solver class. The output provides the values of u and v at each timestep at each point in the grid. This can then be visualized using in-built animation features, producing visually appealing outputs like the gif below.
 
-![](examples/GrayScottEquationsAnimation.gif)
+![](examples/GrayScottEquations_Spots.gif) ![](examples/GrayScottEquations_Stripes1.gif)
 
 ## Parameter inference
 
