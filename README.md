@@ -2,9 +2,13 @@
 ### Barnum Swannell, Danail Stoychev, Miles Weatherseed, Muriel van der Laan
 ### 29th November 2019
 
-This repository can solve any reaction-diffusion system in 2D using finite element and conjugate gradient methods. 
+This module can solve any reaction-diffusion system of the form
 
-There is also the ability to take a time series and use inference to recover the diffusion parameters from the underlying system.
+$$\frac{du}{dt} = 1$$
+
+using finite element and conjugate gradient methods. 
+
+Furthermore, the user has the ability to take some observed data and recover the parameters from the original model using inference methods.
 
 ## Installation
 
