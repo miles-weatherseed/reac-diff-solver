@@ -142,7 +142,6 @@ class Solver:
 
             if printProgress:
                 print("t=" + str(times[i]))
-
             # integrate until the next time in the times array
             while t < times[i]:
                 # solve the IMEX equations for u and v, use the values at the previous iteration as the starting point
