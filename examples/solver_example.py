@@ -48,5 +48,5 @@ t = np.linspace(0,30000,100)
 # equations.
 u, v = solver.solve(t,[2E-5, 1E-5, 0.063, 0.032])
 
-# Create an animation of the solution.
-animate(u,10)
+# Create an animation of the solution and save it to a file called 'GrayScottEquationsAnimation'
+animate(u,10,"GrayScottEquationsAnimation")
