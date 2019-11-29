@@ -17,7 +17,7 @@ def reaction_function(u,v, parameters = [1.0]):
 solver = Solver([0.0,1.0], [0.0,1.0], 20, initial_conditions)
 solver.set_reactionFunction(reaction_function)
 t = np.linspace(0,2*np.pi,100)
-u, v = solver.solve(t,[.5,1.0])
+u, v = solver.solve(t,[.5,1.0, 2.0])
 
 T,Y,X = np.meshgrid(t,solver.y,solver.x, indexing = 'ij')
 
