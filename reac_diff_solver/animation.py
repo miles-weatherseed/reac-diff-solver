@@ -18,14 +18,17 @@ def animate(u, total_time, filename = ""):
 
     ims = []
 
+    # create image for each frame
     for frame in u:
         im = plt.imshow(frame, animated=True)
         ims.append([im])
 
-    interval = (1000*total_time) / len(u) # number of miliseconds between each frame
+    # calculate number of miliseconds required between each frame to make the total length of the animation total_time
+    interval = (1000*total_time) / len(u)
     ani = animation.ArtistAnimation(fig, ims, interval=interval, blit=True,
                                     repeat_delay=1000)
 
+    # save animation
     if filename != "":
         writer = PillowWriter(fps=15, bitrate=1800)
         ani.save(filename + ".gif", writer = writer)
