@@ -8,6 +8,7 @@ class Solver:
         """
         Initialises a Solver with the given bounds, gridsize and initial conditions. By default it has no reaction
         terms. These can be set using set_reactionFunction
+
         :param xBounds: x-range of the problem
         :type xBounds: list of two floats
         :param yBounds: y-range of the problem
@@ -29,6 +30,7 @@ class Solver:
     def set_grid(self, xBounds, yBounds, gridSize):
         """
         Sets the grid parameters.
+
         :param xBounds: x-range of the problem
         :type xBounds: list of two floats
         :param yBounds: y-range of the problem
@@ -50,6 +52,7 @@ class Solver:
     def set_reactionFunction(self, function):
         """
         Set the reaction term of the equation (defaults to zero).
+
         :param function: calculates the value of the reaction terms at the given u and v
         :type function: function that takes two numpy arrays (containing values of u and v) and a list of parameters and returns a list of two numpy arrays
         :return:
@@ -59,6 +62,7 @@ class Solver:
     def set_initialConditions(self, initial_condition_function):
         """
         Set the initial conditions used by the solver.
+
         :param initial_condition_function: calculates the values of u and v at t=0 at each gridpoint
         :type initial_condition_function: function that takes two 2d numpy arrays and returns a list of two 2d numpy arrays
         :return:
@@ -70,6 +74,7 @@ class Solver:
     def set_timeStepLength(self, length):
         """
         Set the size of the timestep used by the solver.
+
         :param length: timestep
         :type length: float
         :return:
@@ -79,6 +84,7 @@ class Solver:
     def _create_arrays(self, times):
         """
         Create arrays to store solution at given times
+
         :param times: times at which to find the solution
         :type times: list of floats
         """
@@ -110,6 +116,7 @@ class Solver:
     def solve(self, times, parameters, printProgress = False):
         """
         Solves the equation at the given times.
+
         :param times: times at which the solution is desired.
         :type times: list of floats
         :param parameters: parameters to give to the reaction function
@@ -142,7 +149,6 @@ class Solver:
 
             if printProgress:
                 print("t=" + str(times[i]))
-
             # integrate until the next time in the times array
             while t < times[i]:
                 # solve the IMEX equations for u and v, use the values at the previous iteration as the starting point

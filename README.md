@@ -6,7 +6,7 @@ This module can solve any reaction-diffusion system of the form
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u&space;&plus;&space;f(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u&space;&plus;&space;f(u,v)" title="\frac{\partial u}{\partial t} = D_u \nabla^2u + f(u,v)," /></a>
 
-<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" title="\frac{\partial v}{\partial t} = D_v \nabla^2v + g(u,v)." /></a>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2v&space;&plus;&space;g(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2v&space;&plus;&space;g(u,v)" title="\frac{\partial v}{\partial t} = D_v \nabla^2v + g(u,v)" /></a>
 
 The system is solved numerically using finite element and conjugate gradient methods. 
 
@@ -32,11 +32,11 @@ pip install .
 By default, the solver class expects a system of the format:
 
 
-<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u&space;&plus;&space;f(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u&space;&plus;&space;f(u,v)" title="\frac{\partial u}{\partial t} = D_u \nabla^2u," /></a>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u" title="\frac{\partial u}{\partial t} = D_u \nabla^2u" /></a>
 
-<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" title="\frac{\partial v}{\partial t} = D_v \nabla^2v." /></a>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2v" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2v" title="\frac{\partial v}{\partial t} = D_v \nabla^2v" /></a>
 
-Initial conditions are provided by defined via a function created by the user. For example, to provide the initial conditions for the Gray-Scott Equations, the user defines the function
+Initial conditions are defined via a function created by the user. For example, to provide the initial conditions for the Gray-Scott Equations, the user defines the function
 
 ```
 def initial_conditions(X,Y):
@@ -65,11 +65,33 @@ def Gray_Scott_reaction_terms(u,v, parameters = [1.0, 1.0]):
     return [-u*v**2 + F*(1-u), u*v**2 - (k+F)*v] [u,v]
     
 ```
-This information, along with the values of parameters and the size and resolution of the finite differences grid, are then passed to the solver class. The output provides the values of u and v at each timestep at each point in the grid. This can then be visualized using in-built animation features, producing visually appealing outputs like the gif below.
+This information, along with the values of parameters and the size and resolution of the finite differences grid, are then passed to the solver class. The output provides the values of u and v at each timestep at each point in the grid. This can then be visualized using in-built animation features, producing visually appealing outputs like the gifs below.
 
-![](examples/GrayScottEquationsAnimation.gif)
+![](examples/GrayScottEquations_Spots.gif) ![](examples/GrayScottEquations_Stripes1.gif)
 
 ## Parameter inference
+The user also has the option to tackle to problem in reverse, by providing some observed time series of u and v and recovering the values of the underlying system's parameters using inference. 
+
+The system is set up in much the same way as the solving problem. First, we provide the inference class with the observed data
+
+```
+inference = Inference(u_data, v_data, times)
+```
+
+Next, we set the boundaries for the domain under consideration and provide a reaction function if we are expecting one
+
+
+```
+inference.set_model(xBounds, yBounds)
+inference.set_reaction_function(function)
+```
+
+Once this is setup, we simply call the function *fit_params* which uses the Nelder-Mead algorithm to minimize an L2 error cost function. Note, this is not a trivial process and it will likely take a long time even on a fast machine. The user has to provide an initial estimate of the parameters in the form of *x0* which is a list *[D_u, D_v, ...]*.
+
+
+```
+print(inference.fit_params(x0))
+```
 
 ## Unit Testing
 To run the unit tests, first navigate to the src directory and then use the `unittest` module like this:
