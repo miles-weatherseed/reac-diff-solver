@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from scipy.sparse import lil_matrix, csc_matrix
-from conjgrad import conjugate_gradients
+from src.conjgrad import conjugate_gradients
 
 class ConjugateGradientsTest(unittest.TestCase):
     def test_non_square(self):

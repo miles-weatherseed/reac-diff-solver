@@ -1,7 +1,7 @@
-from solver import Solver
+from src.solver import Solver
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+
 
 def test_1d_diffusion():
     mode = 1.0

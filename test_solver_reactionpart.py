@@ -1,6 +1,6 @@
-from solver import Solver
+from src.solver import Solver
 import numpy as np
-from animation import animate
+from src.animation import animate
 
 def initial_conditions(X,Y):
     u = np.ones_like(X)
@@ -22,8 +22,8 @@ def reaction_function(u,v, parameters = [1.0, 1.0]):
 solver = Solver([0.0, 2.5], [0.0,2.5], 256, initial_conditions)
 
 solver.set_reactionFunction(reaction_function)
-t = np.linspace(0,10000,100)
-u, v = solver.solve(t,[2E-5, 1E-5, 0.063, 0.028])
+t = np.linspace(0,30000,100)
+u, v = solver.solve(t,[2E-5, 1E-5, 0.063, 0.032])
 T,Y,X = np.meshgrid(t,solver.y,solver.x, indexing = 'ij')
 
 animate(u,10)

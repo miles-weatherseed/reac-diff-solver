@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from solver import Solver
+from src.solver import Solver
 
 class TestModel(unittest.TestCase):
     xbounds = [0.0, 2.0]
