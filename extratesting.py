@@ -13,10 +13,10 @@ def initial_conditions(x, y):
     return [zero_mode_solution(x, y, 0), 1.0]
 
 def reaction_function(u,v):
-    return [0, -v]
+    return [0, v*(2-v)]
 
 solver = Solver([0.0, 1.0], [0.0, 1.0], 200, initial_conditions)
-t = np.array([0.0,0.1])
+t = np.linspace(0,0.1,11)
 solver.set_reactionFunction(reaction_function)
 u,v = solver.solve(t,[D1,D2])
 
@@ -34,9 +34,16 @@ print(solver.diff_v)
 
 plt.figure()
 plt.plot(solver.x, len(solver.x)*[np.exp(-0.1)])
-plt.plot(solver.x, v[1,100,:])
+plt.plot(solver.x, v[-1,100,:])
 error = solution[1,0,:] - v[1,100,:]
 print(np.min(v[1,100,:]))
+plt.show()
+
+plt.figure()
+plt.plot(t, np.exp(-t))
+plt.plot(t, v[:,100,100])
+#error = solution[1,0,:] - v[1,100,:]
+#print(np.min(v[1,100,:]))
 plt.show()
 
 m = 1.0
