@@ -1,8 +1,8 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 long_description = ""
 with open("README.md", "r") as fi:
-    long_description = fh.read()
+    long_description = fi.read()
 
 setup(
     name="reac-diff-solver",
@@ -13,12 +13,13 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/miles-weatherseed/scientific_computing_assessment",
-    packages=setuptools.find_packages(),
+    package_dir={'': "reac_diff_solver"},
+    packages=find_packages(where="reac_diff_solver"),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.7',
-    install_requires=['numpy', 'scipy']
+    python_requires=">=3.7",
+    install_requires=["numpy", "scipy"]
 )
