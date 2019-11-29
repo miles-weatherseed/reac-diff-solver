@@ -19,12 +19,12 @@ class Solver:
         """
 
         self.initial_condition_function = initial_condition_function
-        self.set_grid(xBounds,yBounds,gridSize)
-        self.initialConditions_u = self.initial_condition_function(self.X, self.Y)[0]
+        self.set_grid(xBounds,yBounds,gridSize)                                         # create grid
+        self.initialConditions_u = self.initial_condition_function(self.X, self.Y)[0]   # calculate initial conditions at grid points
         self.initialConditions_v = self.initial_condition_function(self.X, self.Y)[1]
 
-        self.reactionFunction = lambda u, v, parameters: [0,0]
-        self.timeStepLength = 0.1
+        self.reactionFunction = lambda u, v, parameters: [0,0]                          # default reaction function returns 0 everywhere
+        self.timeStepLength = 0.1                                                       # default time step
 
     def set_grid(self, xBounds, yBounds, gridSize):
         """
