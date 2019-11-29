@@ -8,8 +8,8 @@ def initial_conditions(X,Y):
     v = np.zeros_like(X)
     u[:20,:20] = 0.5
     v[:20,:20] = 0.25
-    u += 0.1*np.random.standard_normal(X.shape)
-    v += 0.1*np.random.standard_normal(X.shape)
+    u += 0.1*np.ones(X.shape)
+    v += 0.1*np.ones(X.shape)
 
     return [u,v]
 
@@ -25,8 +25,14 @@ solver.set_reactionFunction(reaction_function)
 t = np.linspace(0,100,5)
 u, v = solver.solve(t,[2E-5, 1E-5, 0.06, 0.035])
 
+solver2 = Solver([0.0, 2.5], [0.0,2.5], 256, initial_conditions)
+solver2.set_reactionFunction(reaction_function)
+t2 = np.linspace(0,100,5)
+u2, v2 = solver2.solve(t2,[2E-5, 1E-5, 0.06, 0.035])
+
+
 inf = Inference(u, v, t)
-inf.set_model([0.0, 2.5], [0.0,2.5], 256, initial_conditions)
+inf.set_model([0.0, 2.5], [0.0, 2.5], 256, initial_conditions)
 inf.set_reaction_function(reaction_function)
 inf_params = inf.fit_params([2E-5, 1E-5, 0.06, 0.035])
 
