@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from scipy.sparse import lil_matrix, csc_matrix
-from conjgrad import conjugate_gradients
+from reac_diff_solver.conjgrad import conjugate_gradients
 
 class ConjugateGradientsTest(unittest.TestCase):
     def test_non_square(self):
@@ -36,8 +36,7 @@ class ConjugateGradientsTest(unittest.TestCase):
         b = np.ones(N)
         x0 = np.zeros(N)
         results = conjugate_gradients(A, b, x0)
-        for index, value in enumerate([1.5, 2.0, 1.5]):
-            self.assertAlmostEqual(results[0][index], value)
+        self.assertTrue(np.allclose(results[0], np.array([1.5, 2.0, 1.5])))
 
     def test_result_converging_sparse(self):
         N = 1000
@@ -48,8 +47,7 @@ class ConjugateGradientsTest(unittest.TestCase):
         x0 = np.zeros(N)
         results = conjugate_gradients(csc_matrix(A), b, x0, nmax = 2*N)
         expected_results = np.ones(N) / A.diagonal()
-        for index, value in enumerate(np.nditer(expected_results)):
-            self.assertAlmostEqual(results[0][index], value)
+        self.assertTrue(np.allclose(results[0], expected_results))
 
     def test_result_nonconverging(self):
         N = 3
