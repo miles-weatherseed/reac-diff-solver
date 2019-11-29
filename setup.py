@@ -13,8 +13,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/miles-weatherseed/scientific_computing_assessment",
-    package_dir={'': "reac_diff_solver"},
-    packages=find_packages(where="reac_diff_solver"),
+    packages=["reac_diff_solver"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

@@ -22,6 +22,7 @@ Clone the repo and install via pip:
 .. code-block::
 
     git clone https://github.com/miles-weatherseed/reac-diff-solver.git
+    cd reac_diff_solver
     pip install .
 
 Example
@@ -45,6 +46,11 @@ API Reference
 
 
 .. automodule:: reac_diff_solver.solver
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: reac_diff_solver.animation
    :members:
    :undoc-members:
    :show-inheritance:

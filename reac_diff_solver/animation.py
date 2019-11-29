@@ -3,9 +3,10 @@ import matplotlib.animation as animation
 from matplotlib.animation import PillowWriter
 
 
-def _animate(u, total_time, filename = ""): # pragma: no cover
+def animate(u, total_time, filename = ""): # pragma: no cover
     """
     Creates an animation of u
+
     :param u: frames to show
     :type u: list of 2d numpy arrays
     :param total_time: total time over which the animation should run
