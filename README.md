@@ -4,13 +4,13 @@
 
 This module can solve any reaction-diffusion system of the form
 
-<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u&space;&plus;&space;f(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u&space;&plus;&space;f(u,v)" title="\frac{\partial u}{\partial t} = D_u \nabla^2u + f(u,v)" /></a>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u&space;&plus;&space;f(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u&space;&plus;&space;f(u,v)" title="\frac{\partial u}{\partial t} = D_u \nabla^2u + f(u,v)," /></a>
 
-<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" title="\frac{\partial v}{\partial t} = D_v \nabla^2u + g(u,v)" /></a>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" title="\frac{\partial v}{\partial t} = D_v \nabla^2u + g(u,v)." /></a>
 
-using finite element and conjugate gradient methods. 
+The system is solved numerically using finite element and conjugate gradient methods. 
 
-Furthermore, the user has the ability to take some observed data and recover the parameters from the original model using inference methods.
+In addition to this, the user has the ability to take some observed data and recover the parameters from the original model using inference methods.
 
 ## Installation
 
