@@ -1,5 +1,5 @@
 from scipy import optimize
-from solver import Solver
+from reac_diff_solver.solver import Solver
 import numpy as np
 
 '''

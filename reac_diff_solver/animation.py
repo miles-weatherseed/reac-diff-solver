@@ -3,7 +3,7 @@ import matplotlib.animation as animation
 from matplotlib.animation import PillowWriter
 
 
-def animate(u, total_time, filename = ""):
+def _animate(u, total_time, filename = ""): # pragma: no cover
     """
     Creates an animation of u
     :param u: frames to show
