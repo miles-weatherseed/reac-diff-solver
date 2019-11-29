@@ -57,7 +57,7 @@ class ConjugateGradientsTest(unittest.TestCase):
         with self.assertRaises(Exception) as arctx:
             results = conjugate_gradients(A, b, x0)
         self.assertEqual(str(arctx.exception), "The iteration has failed to converge within nmax(=100) iterations.")
-        # If solved the results[0] would have been [1, 0, -0.5]
+        # If solved the examples[0] would have been [1, 0, -0.5]
 
 if __name__ == "__main__":
     unittest.main()
