@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse
-from ConjugateGradients import conjugate_gradients
-import matplotlib.pyplot as plt
+from src.conjgrad import conjugate_gradients
+
 
 class Solver:
         # Constructor
