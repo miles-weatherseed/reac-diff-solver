@@ -1,6 +1,8 @@
 from solver import Solver
 import numpy as np
 import matplotlib.pyplot as plt
+
+from animation import animate
 from mpl_toolkits.mplot3d import Axes3D
 
 def test_1d_diffusion():
@@ -131,13 +133,17 @@ def gray_scott():
 
     solver = Solver([0.0, 2.5], [0.0, 2.5], 256, initial_conditions)
     solver.set_reactionFunction(reaction_function)
-    t = np.linspace(0, 2000, 50)
+    #t = np.linspace(0, 2000, 50)
+    t = np.linspace(0, 10000, 100)
     u, v = solver.solve(t, [2E-5, 1E-5, 0.051, 0.016])
     T, Y, X = np.meshgrid(t, solver.y, solver.x, indexing='ij')
 
-    for i in range(len(t)):
-        plt.imshow(u[i])
-        plt.show()
+    animate(u, 10)
+
+
+   # for i in range(len(t)):
+   #     plt.imshow(u[i])
+   #     plt.show()
     """ 
     fig = plt.figure()
     ax = fig.gca(projection='3d')
