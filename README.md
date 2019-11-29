@@ -4,7 +4,9 @@
 
 This module can solve any reaction-diffusion system of the form
 
-$$\frac{du}{dt} = 1$$
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u&space;&plus;&space;f(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;u}{\partial&space;t}&space;=&space;D_u&space;\nabla^2u&space;&plus;&space;f(u,v)" title="\frac{\partial u}{\partial t} = D_u \nabla^2u + f(u,v)" /></a>
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;v}{\partial&space;t}&space;=&space;D_v&space;\nabla^2u&space;&plus;&space;g(u,v)" title="\frac{\partial v}{\partial t} = D_v \nabla^2u + g(u,v)" /></a>
 
 using finite element and conjugate gradient methods. 
 
