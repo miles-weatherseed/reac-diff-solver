@@ -23,7 +23,7 @@ git clone https://github.com/miles-weatherseed/reac-diff-solver.git
 Then navigate to the newly created directory and install the module and all dependencies by typing
 
 ```
-cd reac_diff_solver
+cd reac-diff-solver
 pip install .
 ```
 
