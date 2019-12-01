@@ -27,6 +27,12 @@ cd reac-diff-solver
 pip install .
 ```
 
+## API Reference
+
+The API reference can be found at the following location:
+
+https://miles-weatherseed.github.io/reac-diff-solver/
+
 ## PDE system solver
 
 By default, the solver class expects a system of the format:
